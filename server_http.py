@@ -13,7 +13,24 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
        self.wfile.write(command.encode())
 
    def do_POST(self):
-              
+        if self.path == '/data':
+            try:
+                ctype, pdict = cgi.parse_header(s.headers.getheader('content-type'))
+                if ctype == 'multipart/form-data' :
+                    fs = cgi.FieldStorage( fp = s.rfile, 
+                                        headers = s.headers, 
+                                        environ={ 'REQUEST_METHOD':'POST' } 
+                                      )
+                else:
+                    print (" Unexpected POST request")
+                fs_up = fs['file']
+                with open('/root/Desktop/1.txt', 'wb') as o:
+                    o.write( fs_up.file.read() )
+                    self.send_response(200)
+                    self.end_headers()
+            except Exception as e:
+                print (e)
+            return       
         self.send_response(200)
         self.end_headers()
         length = int(self.headers['Content-length'])
